@@ -1,0 +1,12 @@
+const String BASE_URL = "http://212.64.93.216:7777/";
+const String BASE_FILE_URL = "http://212.64.93.216:8000/file/";
+const String GET_RANDOM_ONE = "question/getRandomOne";
+const String GET_QUESTION_COUNT = "question/getQuestionCount";
+const String GET_QUESTION_LIST = "question/list/";
+const String GET_QUESTION_NOT_ADMIN_LIST = "question/notAdmin/";
+const String USER_REGISTER = "user/register";
+const String USER_LOGIN = "user/login";
+const String USER_INFO = "user/";
+const String USER_LIST = "user/list/";
+const String USER_FEEDBACK = "user/feedback/commit";
+const int SUCCESS_CODE=200;
