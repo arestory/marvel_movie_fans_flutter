@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
+
 //import 'package:audioplayers/audioplayers.dart';
 import 'package:marvel_movie_fans_flutter/widget/PhotoView.dart';
 
@@ -22,8 +26,8 @@ class QuestionPage extends StatefulWidget {
   final RightAnswerCallback rightAnswerCallback;
   final WrongAnswerCallback wrongAnswerCallback;
 
-  const QuestionPage(
-      this.questionBean, {this.rightAnswerCallback, this.wrongAnswerCallback});
+  const QuestionPage(this.questionBean,
+      {this.rightAnswerCallback, this.wrongAnswerCallback});
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -113,14 +117,12 @@ class _QuestionPageState extends State<QuestionPage>
                   });
                   if (lastIndex < 0) {
                     if (_getUserAnswer() == widget.questionBean.answer) {
-                      if(widget.rightAnswerCallback!=null){
+                      if (widget.rightAnswerCallback != null) {
                         widget.rightAnswerCallback(widget.questionBean.answer);
-
                       }
                     } else {
-                      if( widget.wrongAnswerCallback!=null){
+                      if (widget.wrongAnswerCallback != null) {
                         widget.wrongAnswerCallback(_getUserAnswer());
-
                       }
                     }
                   }
@@ -172,6 +174,13 @@ class _QuestionPageState extends State<QuestionPage>
         ]);
   }
 
+  void seeAdv() async{
+
+    MethodChannel platform = MethodChannel('loginUser');
+    //第一个参数 tryToast为Java/oc中的方法名(后面会讲)，第二个参数数组为传参数组
+    String user = await platform.invokeMethod('seeAdv');
+  }
+
   double getRatio() {
     if (_currentAnswer.length >= 4) {
       return 1.0;
@@ -190,35 +199,40 @@ class _QuestionPageState extends State<QuestionPage>
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: (){
-              Navigator.of(context).push(new PageRouteBuilder(
-                  opaque: false,
-                  pageBuilder: (BuildContext context, _, __) {
-                    return PhotoView(url: BASE_FILE_URL + widget.questionBean.url,);
-                  },
-                  transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                    return new FadeTransition(
-                      opacity: animation,
-                      child: new FadeTransition(
-                        opacity: new Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  }));
-            },
+              onTap: () {
+                Navigator.of(context).push(new PageRouteBuilder(
+                    opaque: false,
+                    pageBuilder: (BuildContext context, _, __) {
+                      return PhotoView(
+                        url: BASE_FILE_URL + widget.questionBean.url,
+                      );
+                    },
+                    transitionsBuilder:
+                        (_, Animation<double> animation, __, Widget child) {
+                      return new FadeTransition(
+                        opacity: animation,
+                        child: new FadeTransition(
+                          opacity: new Tween<double>(begin: 0.5, end: 1.0)
+                              .animate(animation),
+                          child: child,
+                        ),
+                      );
+                    }));
+              },
               child: Padding(
-            padding: EdgeInsets.all(5),
-            child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: FadeInImage.assetNetwork(
-                    placeholder: "assets/images/loading.png",
-                    image: BASE_FILE_URL + widget.questionBean.url,
-                    fit: BoxFit.cover)
+                padding: EdgeInsets.all(5),
+                child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: FadeInImage.assetNetwork(
+                        placeholder: "assets/images/loading.png",
+                        image: BASE_FILE_URL + widget.questionBean.url,
+                        fit: BoxFit.cover)
 //              child: !_isEmpty&&!_isError&&!_isLoading?Image.network(_imgUrl):Image.asset("assets/images/loading.png"))
 
-                ),
-          )),
+                    ),
+              )),
           GridView.count(
+            physics: NeverScrollableScrollPhysics(),
             crossAxisCount: _currentAnswer.length,
             shrinkWrap: true,
             crossAxisSpacing: 5,
@@ -230,6 +244,7 @@ class _QuestionPageState extends State<QuestionPage>
           Padding(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: GridView.count(
+              physics: NeverScrollableScrollPhysics(),
               crossAxisCount: 7,
               crossAxisSpacing: 5,
               mainAxisSpacing: 5,
@@ -264,6 +279,10 @@ class _QuestionPageState extends State<QuestionPage>
                                     child: Text('获取提示'),
                                   ),
                                   onPressed: () {
+                                    if (Platform.isAndroid) {
+                                      seeAdv();
+
+                                    }
                                     Navigator.of(context).pop();
                                   },
                                 ),

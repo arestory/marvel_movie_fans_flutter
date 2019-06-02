@@ -7,6 +7,7 @@ const String GET_QUESTION_NOT_ADMIN_LIST = "question/notAdmin/";
 const String USER_REGISTER = "user/register";
 const String USER_LOGIN = "user/login";
 const String USER_INFO = "user/";
+const String USER_RANK = "user/getPointRank";
 const String USER_LIST = "user/list/";
 const String USER_FEEDBACK = "user/feedback/commit";
 const int SUCCESS_CODE=200;

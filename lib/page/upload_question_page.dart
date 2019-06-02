@@ -8,6 +8,7 @@ import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
+
 class UploadQuestionPage extends StatefulWidget {
   @override
   _UploadQuestionPageState createState() => _UploadQuestionPageState();
@@ -22,6 +23,7 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
   TextEditingController _keywordEditingController = new TextEditingController();
   TextEditingController _pointEditingController = new TextEditingController();
   bool _allInputEnable = true;
+  bool _isUploading = false;
   String _titleErrorText = "";
   String _answerErrorText = "";
   String _keywordErrorText = "";
@@ -35,10 +37,9 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    UserDataSource.getLoginUser().then((user){
-
+    UserDataSource.getLoginUser().then((user) {
       setState(() {
-        loginUser =user;
+        loginUser = user;
       });
     });
   }
@@ -46,6 +47,7 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
   void _setAllInputEnable(bool enable) {
     setState(() {
       _allInputEnable = enable;
+      _isUploading = !enable;
     });
   }
 
@@ -73,6 +75,14 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
   }
 
   void _uploadQuestion() {
+    if (_isUploading) {
+      Fluttertoast.showToast(
+          msg: "正在上传中，请稍后",
+          backgroundColor: THEME_COLOR,
+          textColor: Colors.white);
+      return;
+    }
+
     String title = _titleEditingController.text;
     String answer = _answerEditingController.text;
     String keyword = _keywordEditingController.text;
@@ -130,19 +140,25 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
       return;
     }
     _setAllInputEnable(false);
-    UserDataSource.uploadQuestion(loginUser.id, imageFile, title, answer, keyword, point,success: (msg){
 
+    UserDataSource.uploadQuestion(
+        loginUser.id, imageFile, title, answer, keyword, point, success: (msg) {
       _setAllInputEnable(true);
-      Fluttertoast.showToast(msg: "上传成功",backgroundColor: THEME_COLOR,textColor: Colors.white);
+      Fluttertoast.showToast(
+          msg: "上传成功", backgroundColor: THEME_COLOR, textColor: Colors.white);
 
-      Navigator.of(context).pop("uploadNewQuestion");
-    },error: (msg){
+      Future.delayed(Duration(milliseconds: 500)).then((data){
+
+        Navigator.of(context).pop("uploadNewQuestion");
+      });
+    }, error: (msg) {
       _setAllInputEnable(true);
 
-      Fluttertoast.showToast(msg: "上传失败：$msg",backgroundColor: THEME_COLOR,textColor: Colors.white);
-
+      Fluttertoast.showToast(
+          msg: "上传失败：$msg",
+          backgroundColor: THEME_COLOR,
+          textColor: Colors.white);
     });
-
   }
 
   @override
@@ -296,13 +312,13 @@ class _UploadQuestionPageState extends State<UploadQuestionPage> {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: FlatButton(
-                    onPressed:_uploadQuestion,
+                    onPressed: _uploadQuestion,
                     splashColor: THEME_GREY_COLOR,
-                    color: THEME_COLOR,
+                    color: _isUploading ? Colors.grey : THEME_COLOR,
                     child: Padding(
                       padding: EdgeInsets.all(18),
                       child: Text(
-                        "提交问题",
+                        _isUploading ? "上传中" : "提交问题",
                         style: TextStyle(color: Colors.white),
                       ),
                     )),

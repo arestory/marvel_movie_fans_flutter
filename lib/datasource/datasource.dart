@@ -1,4 +1,6 @@
 import 'package:flutter/services.dart';
+import 'package:marvel_movie_fans_flutter/bean/UserPoint.dart';
+import 'package:marvel_movie_fans_flutter/bean/UserPointRank.dart';
 import 'package:marvel_movie_fans_flutter/util/DioUtil.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
@@ -52,7 +54,7 @@ class QuestionDataSource {
       {String userId,
       String createUserId,
       int count: 20,
-        int auth :1,
+      int auth: 1,
       DataCallBack<List<NoAdminQuestionBean>> callback,
       ErrorCallback errorCallback}) {
     Map<String, String> map = Map<String, String>();
@@ -62,7 +64,7 @@ class QuestionDataSource {
     if (createUserId != null) {
       map['createUserId'] = createUserId;
     }
-    map['auth']="$auth";
+    map['auth'] = "$auth";
 
     NetUtil.get(
         GET_QUESTION_NOT_ADMIN_LIST + "$page/$count",
@@ -102,6 +104,23 @@ class QuestionDataSource {
 }
 
 class UserDataSource {
+
+  static void savePassLevel(String userId,int level) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("$userId-level-$level", true);
+  }
+  static  Future<Map> isLevelPass(String userId,int level) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if( prefs.containsKey("$userId-level-$level")){
+
+      return Future<Map>.value({"level":level,"finish":true});
+    }else{
+
+      return Future<Map>.value({"level":level,"finish":false});
+    }
+
+  }
+
   static void login(
       {String account,
       String password,
@@ -170,7 +189,7 @@ class UserDataSource {
         UploadFileInfo(imageFile, imageFile.path.split("/").last,
             contentType: ContentType.parse("image/jpg")),
         params: {
-          "createUserId":userId,
+          "createUserId": userId,
           "title": title,
           "answer": answer,
           "keywords": keywords,
@@ -187,6 +206,32 @@ class UserDataSource {
       }
     });
   }
+
+  static void getUserPoint(int page,
+      {int count: 20,
+      DataCallBack<List<UserPoint>> success,
+      ErrorCallback error}) {
+    NetUtil.get("$USER_RANK/$page/$count", (data) {
+      List<UserPoint> pointList = <UserPoint>[];
+
+      for (var item in data) {
+        pointList.add(UserPoint.fromJsonMap(item));
+      }
+      success(pointList);
+    }, errorCallBack: (msg) {
+      error(msg);
+    });
+  }
+
+  static void getUserRanking(String userId,
+      {DataCallBack<UserPointRank> success, ErrorCallback error}) {
+    NetUtil.get("user/$userId/getUserPosition", (data) {
+      success(UserPointRank.fromJsonMap(data));
+    }, errorCallBack: (msg) {
+      error(msg);
+    });
+  }
+
 
   static void updateUserInfo(String userId, String key, String value,
       {DataCallBack<UserBean> success, ErrorCallback error}) {
@@ -258,6 +303,18 @@ class UserDataSource {
         errorCallBack: (msg) {
           fail(msg);
         });
+  }
+
+  static void answerQuestion(String userId,String questionId,{DataCallBack<String> success, ErrorCallback fail}){
+
+    NetUtil.post("/user/$userId/answer/$questionId", (data){
+
+      success(data);
+    },errorCallBack: (msg){
+      fail(msg);
+    });
+
+
   }
 }
 

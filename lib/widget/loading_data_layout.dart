@@ -4,14 +4,21 @@ import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 class LoadingDataLayout extends StatefulWidget {
   final Widget dataWidget;
   final bool isLoading;
+  final String loadingTitle;
+  final String emptyTitle;
+  final String errorTitle;
 
   final bool isDataEmpty;
   final bool isError;
   final VoidCallback errorClick;
 
-  const LoadingDataLayout(
+
+   LoadingDataLayout(
       {Key key,
       this.dataWidget,
+        this.loadingTitle:"正在加载中...",
+        this.emptyTitle:"数据为空",
+        this.errorTitle:"数据加载失败，点击重试",
       this.isLoading: true,
       this.isDataEmpty: false,
       this.isError: false,
@@ -36,7 +43,7 @@ class _LoadingDataLayoutState extends State<LoadingDataLayout> {
           ),
           Padding(
             padding: EdgeInsets.all(10),
-            child: Text("正在加载中..."),
+            child: Text(widget.loadingTitle),
           )
         ],
       ));
@@ -49,7 +56,7 @@ class _LoadingDataLayoutState extends State<LoadingDataLayout> {
           Icon(Icons.receipt),
           Padding(
             padding: EdgeInsets.all(10),
-            child: Text("数据为空"),
+            child: Text(widget.emptyTitle),
           )
         ],
       ));
@@ -77,7 +84,7 @@ class _LoadingDataLayoutState extends State<LoadingDataLayout> {
                 Padding(
                   padding: EdgeInsets.all(10),
                   child: Text(
-                    "数据加载失败，点击重试",
+                    widget.errorTitle,
                     style: TextStyle(
                         color: _isTapDown ? THEME_COLOR : THEME_GREY_COLOR),
                   ),

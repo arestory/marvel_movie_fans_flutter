@@ -30,6 +30,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
 
   var _pageController = new PageController(initialPage: 0);
   String _title = "正在加载数据";
+  int currentPage = 0;
   UserBean loginUser;
 
   void _getQuestionList() {
@@ -39,6 +40,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
         questionList.addAll(list);
         _title = questionList.first.title;
         _isLoading = false;
+        //判断该关卡的题目是否全部答完
         if (!widget.level.isFinish) {
           bool existQuestionNotAnswer = questionList.any((question) {
             return !question.hadAnswer;
@@ -83,19 +85,72 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
       return QuestionPage(
         questionBean,
         rightAnswerCallback: (answer) {
-          Fluttertoast.showToast(
-            msg: "恭喜你，回答正确",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIos: 1,
-            backgroundColor: THEME_COLOR,
-            textColor: Colors.white,
-          );
-          Future.delayed(Duration(milliseconds: 500)).whenComplete(() {
-            _pageController.animateToPage(index + 1,
-                duration: Duration(milliseconds: 200),
-                curve: ElasticInOutCurve(0.3));
-          });
+          if (!questionBean.hadAnswer) {
+            UserDataSource.answerQuestion(loginUser.id, questionBean.id,
+                success: (data) {
+              print(data);
+            }, fail: (msg) {
+              print("fail $msg");
+            });
+            setState(() {
+              questionBean.hadAnswer = true;
+              questionList[index] = questionBean;
+            });
+          }
+          if(index+1==questionList.length){
+
+
+          int lastIndex =  questionList.indexWhere((question){
+
+             return !question.hadAnswer;
+           });
+          if(lastIndex>=0){
+
+            Fluttertoast.showToast(
+              msg: "恭喜你，回答正确，请继续回答",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIos: 1,
+              backgroundColor: THEME_COLOR,
+              textColor: Colors.white,
+            );
+            Future.delayed(Duration(milliseconds: 500)).whenComplete(() {
+              _pageController.animateToPage(lastIndex,
+                  duration: Duration(milliseconds: 200),
+                  curve: ElasticInOutCurve(0.3));
+            });
+          }else{
+            Fluttertoast.showToast(
+              msg: "恭喜你，本关已全部回答完毕",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIos: 1,
+              backgroundColor: THEME_COLOR,
+              textColor: Colors.white,
+            );
+
+            Future.delayed(Duration(milliseconds: 500)).then((_){
+              eventBus.fire(widget.level);
+              Navigator.of(context).pop();
+            });
+          }
+
+          }else{
+            Fluttertoast.showToast(
+              msg: "恭喜你，回答正确",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIos: 1,
+              backgroundColor: THEME_COLOR,
+              textColor: Colors.white,
+            );
+            Future.delayed(Duration(milliseconds: 500)).whenComplete(() {
+              _pageController.animateToPage(index + 1,
+                  duration: Duration(milliseconds: 200),
+                  curve: ElasticInOutCurve(0.3));
+            });
+          }
+
         },
         wrongAnswerCallback: (wrong) {
           Fluttertoast.showToast(
@@ -137,18 +192,80 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
         errorClick: () {
           _getQuestionList();
         },
-        dataWidget: PageView.builder(
-          onPageChanged: (index) {
-            setState(() {
-              _title = questionList[index].title;
-            });
-          },
-          itemBuilder: (context, index) {
-            return buildItemWidget(context, index);
-          },
-          itemCount: questionList.length,
-          controller: _pageController,
-          scrollDirection: Axis.horizontal,
+        dataWidget: Column(
+          children: <Widget>[
+            Expanded(
+              child: PageView.builder(
+                onPageChanged: (index) {
+                  setState(() {
+                    _title = questionList[index].title;
+                    currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return buildItemWidget(context, index);
+                },
+                itemCount: questionList.length,
+                controller: _pageController,
+                scrollDirection: Axis.horizontal,
+              ),
+            ),
+            questionList.length > 0
+                ? Padding(
+                    padding: EdgeInsets.all(20),
+                    child: FlatButton(
+                      color: THEME_COLOR,
+                      splashColor: THEME_GREY_COLOR,
+                      onPressed: () {
+                        if (currentPage+1 == questionList.length) {
+
+                          int lastIndex =  questionList.indexWhere((question){
+
+                            return !question.hadAnswer;
+                          });
+                          if(lastIndex<0){
+
+                            Fluttertoast.showToast(
+                              msg: "恭喜你，本关已全部回答完毕",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIos: 1,
+                              backgroundColor: THEME_COLOR,
+                              textColor: Colors.white,
+                            );
+
+                            Future.delayed(Duration(milliseconds: 500)).then((_){
+                              eventBus.fire(widget.level);
+                              Navigator.of(context).pop();
+                            });
+                          }else{
+
+                            Fluttertoast.showToast(
+                              msg: "恭喜你，回答正确，请继续回答",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIos: 1,
+                              backgroundColor: THEME_COLOR,
+                              textColor: Colors.white,
+                            );
+                            Future.delayed(Duration(milliseconds: 500)).whenComplete(() {
+                              _pageController.animateToPage(lastIndex,
+                                  duration: Duration(milliseconds: 200),
+                                  curve: ElasticInOutCurve(0.3));
+                            });
+                          }
+                        } else {
+                          _pageController.jumpToPage(currentPage + 1);
+                        }
+                      },
+                      child: Text(
+                         currentPage+1==questionList.length?"完成": questionList[currentPage].hadAnswer ? "已回答，下一个":"下一个",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
+                : Text(""),
+          ],
         ),
       ),
     );

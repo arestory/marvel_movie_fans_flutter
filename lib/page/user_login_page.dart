@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'before_regitser_question_page.dart';
 
 class UserLoginPage extends StatefulWidget {
   @override
@@ -86,9 +89,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
           print(user.avatar);
           _changeErrorText();
 
-          UserDataSource.saveLoginUser(user);
-          Navigator.of(context).pop(user);
-          eventBus.fire(user);
+          loginSuccess(user);
         },
         fail: (msg) {
           _setAllInputEnable(true);
@@ -135,24 +136,53 @@ class _UserLoginPageState extends State<UserLoginPage> {
           TextSelection.collapsed(offset: _pwd2EditingController.text.length);
       return;
     }
-    _setAllInputEnable(false);
 
-    UserDataSource.register(
-        account: account,
-        password: pwd,
-        confirmPassword: pwd2,
-        success: (user) {
-          print(user.avatar);
-          _setAllInputEnable(true);
-          UserDataSource.saveLoginUser(user);
-          Navigator.of(context).pop(user);
-          eventBus.fire(user);
-        },
-        fail: (msg) {
-          _changeErrorText(accountErrorText: msg);
-          _setAllInputEnable(true);
-        });
+    Fluttertoast.showToast(
+        msg: "必须答对一条问题，才能完成注册",
+        textColor: Colors.white,
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: THEME_COLOR);
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+      return BeforeRegisterQuestionPage();
+    })).then((result) {
+      if (result == "success") {
+        _setAllInputEnable(false);
+
+        UserDataSource.register(
+            account: account,
+            password: pwd,
+            confirmPassword: pwd2,
+            success: (user) {
+
+              loginSuccess(user,title: "注册成功");
+
+            },
+            fail: (msg) {
+              _changeErrorText(accountErrorText: msg);
+              _setAllInputEnable(true);
+            });
+      }
+    });
   }
+
+  void loginSuccess(UserBean user,{String title:"登录成功"}){
+
+    Fluttertoast.showToast(
+        msg: title,
+        textColor: Colors.white,
+        toastLength: Toast.LENGTH_LONG,
+        backgroundColor: THEME_COLOR);
+
+    _setAllInputEnable(true);
+    UserDataSource.saveLoginUser(user);
+    eventBus.fire(user);
+    Future.delayed(Duration(milliseconds: 500)).then((data){
+
+      Navigator.of(context).pop(user);
+    });
+
+  }
+
 
   List<Widget> buildListView() {
     return <Widget>[
@@ -171,6 +201,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
             cursorColor: THEME_COLOR,
             keyboardType: TextInputType.text,
             controller: _accountEditingController,
+            inputFormatters: [ BlacklistingTextInputFormatter(RegExp("[ ]"))],
             decoration: InputDecoration(
                 focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: THEME_COLOR)),
@@ -198,6 +229,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
             controller: _pwdEditingController,
             obscureText: true,
             maxLength: 20,
+            inputFormatters: [ BlacklistingTextInputFormatter(RegExp("[ ]"))],
             decoration: InputDecoration(
                 errorText: _pwdErrorText != "" ? _pwdErrorText : null,
                 focusedBorder: UnderlineInputBorder(
@@ -227,6 +259,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
               controller: _pwd2EditingController,
               maxLength: 20,
               obscureText: true,
+              inputFormatters: [ BlacklistingTextInputFormatter(RegExp("[ ]"))],
               decoration: InputDecoration(
                   focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: THEME_COLOR)),

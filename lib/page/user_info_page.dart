@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/page/user_question_page.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
@@ -221,7 +222,15 @@ class _UserInfoPageState extends State<UserInfoPage> {
               ), InkWell(
                   radius: 1000,
                   splashColor: THEME_COLOR,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+
+
+                      return UserQuestionPage(currentUser.id,currentUser.nickName);
+                    }));
+
+
+                  },
                   child: Padding(
                     padding: EdgeInsets.only(
                         top: 30, bottom: 30, left: 10, right: 10),

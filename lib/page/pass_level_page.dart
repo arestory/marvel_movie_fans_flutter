@@ -32,6 +32,7 @@ class _LevelPassPageState extends State<LevelPassPage>
 
   void _getTotalQuestionCount() {
     setState(() {
+      levelList.clear();
       _isLoading = true;
       _isEmpty = false;
       _isError = false;
@@ -40,19 +41,36 @@ class _LevelPassPageState extends State<LevelPassPage>
       setState(() {
         _isLoading = false;
 
+        int levelIndex = 0;
         if (count > 0) {
           int countOfLastLevel = count % 10;
           for (int i = 1; i <= count; i++) {
-            int levelIndex = i % 10;
-            if (i != 0 && levelIndex == 0) {
-              var level = Level(levelList.length + 1, count: 10);
-              levelList.add(level);
+
+            if (i != 0 &&  i % 10 == 0) {
+
+              levelIndex++;
+              if(loginUser!=null){
+               UserDataSource.isLevelPass(loginUser.id,levelIndex).then((map){
+                  var level = Level( map["level"], count: 10,isFinish: map["finish"]);
+                  levelList.add(level);
+                });
+              }else{
+                var level = Level(levelIndex, count: 10);
+                levelList.add(level);
+              }
             }
           }
           if (countOfLastLevel > 0) {
-            var lastLevel =
-                Level(levelList.length + 1, count: countOfLastLevel);
-            levelList.add(lastLevel);
+
+            if(loginUser!=null){
+              UserDataSource.isLevelPass(loginUser.id,levelIndex).then((map){
+                var level = Level( map["level"], count: 10,isFinish: map["finish"]);
+                levelList.add(level);
+              });
+            }else{
+              var level = Level(levelIndex, count: 10);
+              levelList.add(level);
+            }
           }
         } else {
           _isEmpty = true;
@@ -115,6 +133,8 @@ class _LevelPassPageState extends State<LevelPassPage>
       setState(() {
 
         levelList[level.level-1] = Level(level.level,count: level.count,isFinish: true);
+
+        UserDataSource.savePassLevel(loginUser.id, level.level);
       });
     });
 

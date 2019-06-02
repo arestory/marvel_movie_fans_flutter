@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
 import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/page/user_login_page.dart';
 import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
@@ -85,7 +86,7 @@ class _NoAdminQuestionPageState extends State<NoAdminQuestionPage>
           Navigator.of(context).push(new PageRouteBuilder(
               opaque: false,
               pageBuilder: (BuildContext context, _, __) {
-                return QuestionDetailPage(question);
+                return loginUser!=null?QuestionDetailPage(question):UserLoginPage();
               },
               transitionsBuilder:
                   (_, Animation<double> animation, __, Widget child) {
@@ -97,7 +98,20 @@ class _NoAdminQuestionPageState extends State<NoAdminQuestionPage>
                     child: child,
                   ),
                 );
-              }));
+              })).then((question){
+                if(question is NoAdminQuestionBean){
+
+                  int index = _noAdminQuestionList.indexOf(question);
+                  if(index>=0){
+                    question.hadAnswer = true;
+                    setState(() {
+                      _noAdminQuestionList[index] =question;
+
+                    });
+                  }
+
+                }
+          });
         },
         splashColor: THEME_COLOR,
         child: Column(

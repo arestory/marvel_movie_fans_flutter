@@ -4,5 +4,12 @@
         <!-- Show a splash screen on the activity. Automatically removed when
              Flutter draws its first frame -->
         <item name="android:windowBackground">@drawable/launch_background</item>
+
+    </style>
+    <style name="Adv"  >
+
+
+        <item name="android:colorPrimary">#B20000</item>
+        <item name="android:colorAccent">#B20000</item>
     </style>
 </resources>

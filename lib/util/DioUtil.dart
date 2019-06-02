@@ -39,7 +39,7 @@ class NetUtil {
       var statusCode = response.statusCode;
       String errorMsg = "";
       //处理错误部分
-      if (statusCode < 0) {
+      if (statusCode !=200) {
         errorMsg = "网络请求错误,状态码:" + statusCode.toString();
         _handError(errorCallBack, errorMsg);
         return;
@@ -100,7 +100,7 @@ class NetUtil {
       statusCode = response.statusCode;
 
       //处理错误部分
-      if (statusCode < 0) {
+      if (statusCode !=200) {
         errorMsg = "网络请求错误,状态码:" + statusCode.toString();
         _handError(errorCallBack, errorMsg);
         return;

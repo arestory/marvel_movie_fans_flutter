@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:marvel_movie_fans_flutter/bean/NoAdminQuestionBean.dart';
 import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'common_question_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 class QuestionDetailPage extends StatefulWidget {
 
-  final QuestionBean questionBean;
+  final NoAdminQuestionBean questionBean;
 
   const QuestionDetailPage( this.questionBean);
   @override
@@ -14,6 +15,8 @@ class QuestionDetailPage extends StatefulWidget {
 }
 
 class _QuestionDetailPageState extends State<QuestionDetailPage> {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +38,16 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
       ),
       body: QuestionPage(widget.questionBean,rightAnswerCallback: (answer){
 
+
+        UserDataSource.getLoginUser().then((loginUser){
+          UserDataSource.answerQuestion(loginUser.id, widget.questionBean.id,success: (data){
+
+            print(data);
+          },fail: (msg){
+            print("fail $msg");
+
+          });
+        });
         Fluttertoast.showToast(
           msg: "恭喜你，回答正确",
           toastLength: Toast.LENGTH_SHORT,
@@ -44,7 +57,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           textColor: Colors.white,
         );
         Future.delayed(Duration(milliseconds: 500)).whenComplete((){
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(widget.questionBean);
         });
 
       },wrongAnswerCallback: (wrong){

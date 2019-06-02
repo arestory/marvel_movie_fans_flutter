@@ -29,6 +29,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '漫威猜影团',
+      debugShowCheckedModeBanner: false,
+//      showPerformanceOverlay: true,
       theme: ThemeData(
         primaryColor: THEME_COLOR,
           // This is the theme of your application.

@@ -2,6 +2,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
+import 'package:marvel_movie_fans_flutter/page/rank_page.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'user_login_page.dart';
 import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
@@ -47,11 +48,20 @@ class _UserPageState extends State<UserPage>
     });
   }
 
+  void getUserRanking(){
+
+    UserDataSource.getUserRanking(loginUser.id,success:(point){
+
+    },error: (msg){
+
+    });
+  }
   void refreshUser() {
     UserDataSource.getLoginUser().then((user) {
       setState(() {
         print("刷新个人信息");
         loginUser = user;
+        getUserRanking();
       });
     });
   }
@@ -218,7 +228,14 @@ class _UserPageState extends State<UserPage>
         color: THEME_GREY_COLOR,
       ),
       InkWell(
-        onTap: () {},
+        onTap: () {
+
+          Navigator.of(context).push(MaterialPageRoute(builder: (context){
+
+            return loginUser==null?UserLoginPage():RankPage();
+
+          }));
+        },
         radius: 1000,
         splashColor: THEME_COLOR,
         child: Padding(
