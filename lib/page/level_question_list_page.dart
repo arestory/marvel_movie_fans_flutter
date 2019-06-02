@@ -212,7 +212,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
             ),
             questionList.length > 0
                 ? Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(10),
                     child: FlatButton(
                       color: THEME_COLOR,
                       splashColor: THEME_GREY_COLOR,

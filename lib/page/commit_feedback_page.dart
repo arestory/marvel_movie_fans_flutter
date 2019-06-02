@@ -95,43 +95,46 @@ class _CommitFeedbackPageState extends State<CommitFeedbackPage> {
               }),
           title: Text("反馈问题"),
         ),
-        body: Column(
-          children: <Widget>[
-            TextField(
-              controller: editingController,
-              enabled: allInputEnable,
-              autofocus: true,
-              maxLines: 10,
-              maxLength: 200,
-              decoration: InputDecoration(
-                  errorText: errorText, contentPadding: EdgeInsets.all(10)),
-              textAlign: TextAlign.start,
-            ),
-            !allInputEnable
-                ? Padding(
-                    padding: EdgeInsets.only(top: 15),
-                    child: Container(
-                      height: 3,
-                      child: LinearProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(THEME_COLOR)),
-                    ),
-                  )
-                : Text(""),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: FlatButton(
-                    onPressed: allInputEnable
-                        ? commitFeedback
-                        : () {},
-                    color: allInputEnable ? THEME_COLOR : THEME_GREY_COLOR,
-                    textColor: Colors.white,
-                    splashColor: THEME_GREY_COLOR,
-                    child: Text(allInputEnable ? "提交" : "提交中"),
-                  )),
-            )
-          ],
+        body: SingleChildScrollView(
+
+          child: Column(
+            children: <Widget>[
+              TextField(
+                controller: editingController,
+                enabled: allInputEnable,
+                autofocus: true,
+                maxLines: 10,
+                maxLength: 200,
+                decoration: InputDecoration(
+                    errorText: errorText, contentPadding: EdgeInsets.all(10)),
+                textAlign: TextAlign.start,
+              ),
+              !allInputEnable
+                  ? Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Container(
+                  height: 3,
+                  child: LinearProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(THEME_COLOR)),
+                ),
+              )
+                  : Text(""),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: FlatButton(
+                      onPressed: allInputEnable
+                          ? commitFeedback
+                          : () {},
+                      color: allInputEnable ? THEME_COLOR : THEME_GREY_COLOR,
+                      textColor: Colors.white,
+                      splashColor: THEME_GREY_COLOR,
+                      child: Text(allInputEnable ? "提交" : "提交中"),
+                    )),
+              )
+            ],
+          ),
         ));
   }
 }
