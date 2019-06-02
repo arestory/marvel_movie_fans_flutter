@@ -34,46 +34,49 @@ class _RandomPageState extends State<RandomPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LoadingDataLayout(
-      isLoading: _isLoading,
-      isError: _isError,
-      isDataEmpty: _isEmpty,
-      dataWidget: Container(
-        child: Column(
-          children: <Widget>[
-            _currentQuestion != null
-                ? QuestionPage(_currentQuestion,rightAnswerCallback: (answer) {
+    return SingleChildScrollView(
 
-              Fluttertoast.showToast(
-                msg: "恭喜你，回答正确",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIos: 1,
-                backgroundColor: THEME_COLOR,
-                textColor: Colors.white,
-              );
-               _getRandomQuestion();
-            },wrongAnswerCallback: (wrong) {
+      child: LoadingDataLayout(
+        isLoading: _isLoading,
+        isError: _isError,
+        isDataEmpty: _isEmpty,
+        dataWidget: Container(
+          child: Column(
+            children: <Widget>[
+              _currentQuestion != null
+                  ? QuestionPage(_currentQuestion,rightAnswerCallback: (answer) {
 
-              Fluttertoast.showToast(
+                Fluttertoast.showToast(
+                  msg: "恭喜你，回答正确",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIos: 1,
+                  backgroundColor: THEME_COLOR,
+                  textColor: Colors.white,
+                );
+                _getRandomQuestion();
+              },wrongAnswerCallback: (wrong) {
+
+                Fluttertoast.showToast(
                   msg: "回答不正确",
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.BOTTOM,
                   timeInSecForIos: 1,
-                backgroundColor: Colors.grey,
-                textColor: Colors.white,
-              );
+                  backgroundColor: Colors.grey,
+                  textColor: Colors.white,
+                );
 
-              print("wrongAnswer");
+                print("wrongAnswer");
 
-            })
-                : Text("")
-          ],
+              })
+                  : Text("")
+            ],
+          ),
         ),
+        errorClick: () {
+          _getRandomQuestion();
+        },
       ),
-      errorClick: () {
-        _getRandomQuestion();
-      },
     );
   }
 

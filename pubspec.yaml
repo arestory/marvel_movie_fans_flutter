@@ -56,6 +56,7 @@ flutter:
   assets:
     - assets/images/loading.png
     - assets/images/placeholder.png
+    - assets/images/app_logo_round.png
     - assets/audio/click.mp3
   #  - images/a_dot_ham.jpeg
 

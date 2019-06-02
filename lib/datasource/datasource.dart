@@ -104,21 +104,18 @@ class QuestionDataSource {
 }
 
 class UserDataSource {
-
-  static void savePassLevel(String userId,int level) async{
+  static void savePassLevel(String userId, int level) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("$userId-level-$level", true);
   }
-  static  Future<Map> isLevelPass(String userId,int level) async{
+
+  static Future<Map> isLevelPass(String userId, int level) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if( prefs.containsKey("$userId-level-$level")){
-
-      return Future<Map>.value({"level":level,"finish":true});
-    }else{
-
-      return Future<Map>.value({"level":level,"finish":false});
+    if (prefs.containsKey("$userId-level-$level")) {
+      return Future<Map>.value({"level": level, "finish": true});
+    } else {
+      return Future<Map>.value({"level": level, "finish": false});
     }
-
   }
 
   static void login(
@@ -232,7 +229,6 @@ class UserDataSource {
     });
   }
 
-
   static void updateUserInfo(String userId, String key, String value,
       {DataCallBack<UserBean> success, ErrorCallback error}) {
     NetUtil.post(
@@ -305,16 +301,29 @@ class UserDataSource {
         });
   }
 
-  static void answerQuestion(String userId,String questionId,{DataCallBack<String> success, ErrorCallback fail}){
-
-    NetUtil.post("/user/$userId/answer/$questionId", (data){
-
+  static void answerQuestion(String userId, String questionId,
+      {DataCallBack<String> success, ErrorCallback fail}) {
+    NetUtil.post("/user/$userId/answer/$questionId", (data) {
       success(data);
-    },errorCallBack: (msg){
+    }, errorCallBack: (msg) {
       fail(msg);
     });
+  }
 
+  static void commitFeedback(String content,
+      {String userId: "traveler", String questionId,DataCallBack<String> success, ErrorCallback fail}) {
+    NetUtil.post("/user/feedback/commit", (data) {
 
+      success(data);
+    },
+        params: {
+          "userId": userId,
+          "questionId": questionId,
+          "content": content
+        },
+        errorCallBack: (msg) {
+          fail(msg);
+        });
   }
 }
 

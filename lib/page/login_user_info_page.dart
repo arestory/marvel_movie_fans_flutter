@@ -59,7 +59,7 @@ class _LoginUserInfoPageState extends State<LoginUserInfoPage> {
                 onChanged: (value) {},
                 autofocus: true,
                 cursorColor: THEME_COLOR,
-                inputFormatters:[WhitelistingTextInputFormatter(RegExp("[0123456789]"))],
+                inputFormatters: key == "age"?[WhitelistingTextInputFormatter(RegExp("[0123456789]"))]:[],
                 keyboardType:
                     key == "age" ? TextInputType.number : TextInputType.text,
                 controller: _editingController,
@@ -76,6 +76,7 @@ class _LoginUserInfoPageState extends State<LoginUserInfoPage> {
                     String newValue = _editingController.text;
                     if(newValue == value){
                       Navigator.of(context).pop();
+
 
                       return;
                     }

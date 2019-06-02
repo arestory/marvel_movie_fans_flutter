@@ -28,7 +28,10 @@ class NetUtil {
     if(params!=null){
       params.forEach((key,value){
 
-        data[key]=value;
+        if(value!=null){
+          data[key]=value;
+
+        }
       });
     }
     FormData formData = FormData.from(data);
@@ -82,7 +85,9 @@ class NetUtil {
         if (params != null && params.isNotEmpty) {
           StringBuffer sb = new StringBuffer("?");
           params.forEach((key, value) {
-            sb.write("$key" + "=" + "$value" + "&");
+            if(value!=null){
+              sb.write("$key" + "=" + "$value" + "&");
+            }
           });
           String paramStr = sb.toString();
           paramStr = paramStr.substring(0, paramStr.length - 1);

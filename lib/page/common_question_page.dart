@@ -9,16 +9,16 @@ import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 //import 'package:audioplayers/audioplayers.dart';
 import 'package:marvel_movie_fans_flutter/widget/PhotoView.dart';
 
+import 'commit_feedback_page.dart';
+
 class Keyword {
   final String word;
   final int index;
   final bool selected;
 
-  const Keyword(
-    this.word,
-    this.index,
-    this.selected,
-  );
+  const Keyword(this.word,
+      this.index,
+      this.selected,);
 }
 
 class QuestionPage extends StatefulWidget {
@@ -61,17 +61,7 @@ class _QuestionPageState extends State<QuestionPage>
     _currentAnswer.forEach((keyword) {
       widgets.add(GestureDetector(
           onTap: () {
-            if (keyword.word != "") {
-              _playSound();
-              setState(() {
-                int oldIndex = _currentAnswer.indexOf(keyword);
-                _currentAnswer[oldIndex] = Keyword("", -1, false);
-                Keyword newKeyword =
-                    new Keyword(keyword.word, keyword.index, false);
-
-                _currentKeywords[keyword.index] = newKeyword;
-              });
-            }
+            clickKeyword(keyword);
           },
           child: Container(
             color: keyword.word == "" ? THEME_GREY_COLOR : THEME_COLOR,
@@ -87,48 +77,68 @@ class _QuestionPageState extends State<QuestionPage>
     return widgets;
   }
 
+  void clickAnswerWord(Keyword keyword) {
+    if (keyword.word != "") {
+      _playSound();
+      setState(() {
+        int oldIndex = _currentAnswer.indexWhere((word) {
+          return word.index == word.index;
+        });
+        _currentAnswer[oldIndex] = Keyword("", -1, false);
+        Keyword newKeyword =
+        new Keyword(keyword.word, keyword.index, false);
+        _currentKeywords[keyword.index] = newKeyword;
+      });
+    }
+  }
+
+  void clickKeyword(Keyword keyword) {
+    Keyword newKeyword =
+    new Keyword(keyword.word, keyword.index, !keyword.selected);
+    print("onTap");
+    setState(() {
+      if (keyword.selected) {
+        int oldIndex = _currentAnswer.indexWhere((word) {
+          return word.index == keyword.index;
+        });
+        _currentAnswer[oldIndex] = Keyword("", -1, false);
+        _currentKeywords[keyword.index] = newKeyword;
+        _playSound();
+      } else {
+        int index = _currentAnswer.indexWhere((keyword) {
+          return keyword.word == "";
+        });
+        if (index >= 0) {
+          _playSound();
+
+          _currentAnswer[index] = newKeyword;
+          _currentKeywords[keyword.index] = newKeyword;
+          int lastIndex = _currentAnswer.lastIndexWhere((word) {
+            return word.word == "";
+          });
+          if (lastIndex < 0) {
+            if (_getUserAnswer() == widget.questionBean.answer) {
+              if (widget.rightAnswerCallback != null) {
+                widget.rightAnswerCallback(widget.questionBean.answer);
+              }
+            } else {
+              if (widget.wrongAnswerCallback != null) {
+                widget.wrongAnswerCallback(_getUserAnswer());
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
   List<Widget> _createKeywordViews() {
     List<Widget> widgets = <Widget>[];
 
     _currentKeywords.forEach((keyword) {
       widgets.add(GestureDetector(
           onTap: () {
-            Keyword newKeyword =
-                new Keyword(keyword.word, keyword.index, !keyword.selected);
-            print("onTap");
-            setState(() {
-              if (keyword.selected) {
-                int oldIndex = _currentAnswer.indexOf(keyword);
-                _currentAnswer[oldIndex] = Keyword("", -1, false);
-                _currentKeywords[keyword.index] = newKeyword;
-
-                _playSound();
-              } else {
-                int index = _currentAnswer.indexWhere((keyword) {
-                  return keyword.word == "";
-                });
-                if (index >= 0) {
-                  _playSound();
-
-                  _currentAnswer[index] = newKeyword;
-                  _currentKeywords[keyword.index] = newKeyword;
-                  int lastIndex = _currentAnswer.lastIndexWhere((word) {
-                    return word.word == "";
-                  });
-                  if (lastIndex < 0) {
-                    if (_getUserAnswer() == widget.questionBean.answer) {
-                      if (widget.rightAnswerCallback != null) {
-                        widget.rightAnswerCallback(widget.questionBean.answer);
-                      }
-                    } else {
-                      if (widget.wrongAnswerCallback != null) {
-                        widget.wrongAnswerCallback(_getUserAnswer());
-                      }
-                    }
-                  }
-                }
-              }
-            });
+            clickKeyword(keyword);
           },
           child: Container(
             color: keyword.selected ? THEME_COLOR : THEME_GREY_COLOR,
@@ -163,19 +173,8 @@ class _QuestionPageState extends State<QuestionPage>
     });
   }
 
-  void _showMenu() async {
-    final result = await showMenu(
-        context: context,
-        position: RelativeRect.fromLTRB(400.0, 700.0, 100.0, 100.0),
-//    position: RelativeRect.fromLTRB(1000.0, 1000.0, 0.0, 10.0),
-        items: <PopupMenuItem<String>>[
-          new PopupMenuItem<String>(value: '获取提示', child: new Text('获取提示')),
-          new PopupMenuItem<String>(value: '反馈问题', child: new Text('反馈问题')),
-        ]);
-  }
 
-  void seeAdv() async{
-
+  void seeAdv() async {
     MethodChannel platform = MethodChannel('loginUser');
     //第一个参数 tryToast为Java/oc中的方法名(后面会讲)，第二个参数数组为传参数组
     String user = await platform.invokeMethod('seeAdv');
@@ -229,7 +228,7 @@ class _QuestionPageState extends State<QuestionPage>
                         fit: BoxFit.cover)
 //              child: !_isEmpty&&!_isError&&!_isLoading?Image.network(_imgUrl):Image.asset("assets/images/loading.png"))
 
-                    ),
+                ),
               )),
           GridView.count(
             physics: NeverScrollableScrollPhysics(),
@@ -263,9 +262,9 @@ class _QuestionPageState extends State<QuestionPage>
                     alignment: Alignment.topCenter,
                     icon: Center(
                         child: Icon(
-                      Icons.help,
-                      color: THEME_COLOR,
-                    )),
+                          Icons.help,
+                          color: THEME_COLOR,
+                        )),
                     highlightColor: THEME_GREY_COLOR,
                     onPressed: () {
                       showDialog(
@@ -280,8 +279,29 @@ class _QuestionPageState extends State<QuestionPage>
                                   ),
                                   onPressed: () {
                                     if (Platform.isAndroid) {
-                                      seeAdv();
+                                      String answer = widget.questionBean
+                                          .answer;
 
+                                      //找到第一个空位置
+                                      int emptyPos = _currentAnswer.indexWhere((
+                                          word) {
+                                        return word.word == "";
+                                      });
+                                      if (emptyPos >= 0) {
+                                        String key = answer.split("")[emptyPos];
+                                        int keyPos = _currentKeywords
+                                            .indexWhere((word) {
+                                          return word.word == key;
+                                        });
+
+                                        setState(() {
+                                          _currentAnswer[emptyPos] =
+                                              Keyword(key, keyPos, true);
+                                          _currentKeywords[keyPos] =
+                                              Keyword(key, keyPos, true);
+                                        });
+                                      }
+//                                      seeAdv();
                                     }
                                     Navigator.of(context).pop();
                                   },
@@ -293,6 +313,12 @@ class _QuestionPageState extends State<QuestionPage>
                                   ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
+
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) {
+                                          return CommitFeedbackPage(
+                                            questionId:widget.questionBean.id,);
+                                        }));
                                   },
                                 ),
                               ],
