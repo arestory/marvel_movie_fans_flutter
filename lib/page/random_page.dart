@@ -34,50 +34,53 @@ class _RandomPageState extends State<RandomPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SingleChildScrollView(
-
-      child: LoadingDataLayout(
+    return
+      LoadingDataLayout(
         isLoading: _isLoading,
         isError: _isError,
         isDataEmpty: _isEmpty,
-        dataWidget: Container(
-          child: Column(
-            children: <Widget>[
-              _currentQuestion != null
-                  ? QuestionPage(_currentQuestion,rightAnswerCallback: (answer) {
+        dataWidget: SingleChildScrollView(
 
-                Fluttertoast.showToast(
-                  msg: "恭喜你，回答正确",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIos: 1,
-                  backgroundColor: THEME_COLOR,
-                  textColor: Colors.white,
-                );
-                _getRandomQuestion();
-              },wrongAnswerCallback: (wrong) {
+          child: Container(
+            child: Column(
+              children: <Widget>[
+                _currentQuestion != null
+                    ? QuestionPage(_currentQuestion,rightAnswerCallback: (answer) {
 
-                Fluttertoast.showToast(
-                  msg: "回答不正确",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIos: 1,
-                  backgroundColor: Colors.grey,
-                  textColor: Colors.white,
-                );
+                  Fluttertoast.showToast(
+                    msg: "恭喜你，回答正确",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIos: 1,
+                    backgroundColor: THEME_COLOR,
+                    textColor: Colors.white,
+                  );
+                  _getRandomQuestion();
+                },wrongAnswerCallback: (wrong) {
 
-                print("wrongAnswer");
+                  Fluttertoast.showToast(
+                    msg: "回答不正确",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIos: 1,
+                    backgroundColor: Colors.grey,
+                    textColor: Colors.white,
+                  );
 
-              })
-                  : Text("")
-            ],
+                  print("wrongAnswer");
+
+                })
+                    : Text("")
+              ],
+            ),
           ),
         ),
         errorClick: () {
           _getRandomQuestion();
         },
-      ),
-    );
+      )
+
+    ;
   }
 
   void _getRandomQuestion() {
