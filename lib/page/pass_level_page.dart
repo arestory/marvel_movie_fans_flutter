@@ -1,11 +1,11 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
-import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
+import 'package:marvel_movie_fans_flutter/bean/event_bean.dart';
+import 'package:marvel_movie_fans_flutter/widget/state_layout.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'level_question_list_page.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'user_login_page.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
 class Level {
@@ -63,12 +63,12 @@ class _LevelPassPageState extends State<LevelPassPage>
           if (countOfLastLevel > 0) {
 
             if(loginUser!=null){
-              UserDataSource.isLevelPass(loginUser.id,levelIndex).then((map){
+              UserDataSource.isLevelPass(loginUser.id,levelIndex+1).then((map){
                 var level = Level( map["level"], count: 10,isFinish: map["finish"]);
                 levelList.add(level);
               });
             }else{
-              var level = Level(levelIndex, count: 10);
+              var level = Level(levelIndex+1, count: 10);
               levelList.add(level);
             }
           }
@@ -173,11 +173,11 @@ class _LevelPassPageState extends State<LevelPassPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return LoadingDataLayout(
+    return StateDataLayout(
       isError: _isError,
       isLoading: _isLoading,
       isDataEmpty: _isEmpty,
-      dataWidget: Padding(
+      child: Padding(
         padding: EdgeInsets.only(top: 10, bottom: 10),
         child: GridView.count(
           crossAxisCount: 5,

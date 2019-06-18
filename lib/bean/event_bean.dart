@@ -1,4 +1,4 @@
-import 'UserBean.dart';
+import 'user_bean.dart';
 
 class UpdateUserEvent{
 

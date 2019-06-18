@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
+import 'package:marvel_movie_fans_flutter/bean/event_bean.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';

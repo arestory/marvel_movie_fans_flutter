@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'package:fluttertoast/fluttertoast.dart';

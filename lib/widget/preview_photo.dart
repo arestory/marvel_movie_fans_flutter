@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
+import 'package:flutter/services.dart';
 
 const double _kMinFlingVelocity = 800.0;
 
@@ -8,6 +8,33 @@ class PhotoView extends StatefulWidget {
   final String url ;
   const PhotoView({Key key, this.url}) : super(key: key);
 
+
+  static PageRouteBuilder previewPhoto(BuildContext context,String url){
+    //隐藏状态栏
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    return new PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) {
+          return PhotoView(
+            url: url,
+          );
+        },
+        transitionsBuilder: (_,
+            Animation<double> animation,
+            __,
+            Widget child) {
+          return new FadeTransition(
+            opacity: animation,
+            child: new FadeTransition(
+              opacity: new Tween<double>(
+                  begin: 0.5, end: 1.0)
+                  .animate(animation),
+              child: child,
+            ),
+          );
+        });
+
+  }
 
   @override
   _PhotoViewState createState() => _PhotoViewState();
@@ -84,10 +111,11 @@ class _PhotoViewState extends State<PhotoView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Colors.black,
         body: GestureDetector(
           onTap: () {
+            //恢复状态栏
+            SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top, SystemUiOverlay.bottom]);
             ///添加单击关闭
             Navigator.of(context).pop();
           },

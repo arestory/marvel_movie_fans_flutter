@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/question_bean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
-import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
+import 'package:marvel_movie_fans_flutter/widget/state_layout.dart';
 import 'common_question_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
 
 //import 'package:audioplayers/audioplayers.dart';
-import 'package:marvel_movie_fans_flutter/widget/PhotoView.dart';
+import 'package:marvel_movie_fans_flutter/widget/preview_photo.dart';
 import 'pass_level_page.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 
@@ -185,14 +185,14 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
         ),
         title: Text(_title),
       ),
-      body: LoadingDataLayout(
+      body: StateDataLayout(
         isError: _isError,
         isLoading: _isLoading,
         isDataEmpty: _isEmpty,
         errorClick: () {
           _getQuestionList();
         },
-        dataWidget: Column(
+        child: Column(
           children: <Widget>[
             Expanded(
               child: PageView.builder(

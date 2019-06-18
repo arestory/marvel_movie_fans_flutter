@@ -1,6 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
+import 'package:marvel_movie_fans_flutter/bean/event_bean.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
 import 'package:marvel_movie_fans_flutter/page/rank_page.dart';
 import 'package:marvel_movie_fans_flutter/page/setting_page.dart';
@@ -8,9 +8,9 @@ import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'about_page.dart';
 import 'commit_feedback_page.dart';
 import 'user_login_page.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
-import 'package:marvel_movie_fans_flutter/widget/PhotoView.dart';
+import 'package:marvel_movie_fans_flutter/widget/preview_photo.dart';
 import 'login_user_info_page.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
 import 'package:marvel_movie_fans_flutter/page/my_question_page.dart';
@@ -72,7 +72,7 @@ class _UserPageState extends State<UserPage>
       GestureDetector(
           onTap: () {
             pushPage(context,
-                    nextPage: loginUser != null
+                     nextPage:loginUser != null
                         ? LoginUserInfoPage()
                         : UserLoginPage())
                 .then((value) {
@@ -87,115 +87,91 @@ class _UserPageState extends State<UserPage>
           },
           child: Container(
             height: 200,
+            padding: EdgeInsets.only(top: 20),
             color: THEME_COLOR,
-            child: Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Row(
-                        children: <Widget>[
-                          GestureDetector(
-                              onTap: () {
-                                pushPage(context,
-                                        route: loginUser == null
-                                            ? new MaterialPageRoute(
-                                                builder: (context) {
-                                                return UserLoginPage();
-                                              })
-                                            : new PageRouteBuilder(
-                                                opaque: false,
-                                                pageBuilder:
-                                                    (BuildContext context, _,
-                                                        __) {
-                                                  return PhotoView(
-                                                    url: BASE_FILE_URL +
-                                                        loginUser.avatar,
-                                                  );
-                                                },
-                                                transitionsBuilder: (_,
-                                                    Animation<double> animation,
-                                                    __,
-                                                    Widget child) {
-                                                  return new FadeTransition(
-                                                    opacity: animation,
-                                                    child: new FadeTransition(
-                                                      opacity:
-                                                          new Tween<double>(
-                                                                  begin: 0.5,
-                                                                  end: 1.0)
-                                                              .animate(
-                                                                  animation),
-                                                      child: child,
-                                                    ),
-                                                  );
-                                                }))
-                                    .then((user) {
-                                  if (user is UserBean) {
-                                    setState(() {
-                                      loginUser = user;
-                                    });
-                                  }
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      GestureDetector(
+                          onTap: () {
+                            pushPage(context,
+                                route: loginUser == null
+                                    ? new MaterialPageRoute(
+                                    builder: (context) {
+                                      return UserLoginPage();
+                                    })
+                                    : PhotoView.previewPhoto(
+                                    context,
+                                    BASE_FILE_URL +
+                                        loginUser.avatar))
+                                .then((user) {
+                              if (user is UserBean) {
+                                setState(() {
+                                  loginUser = user;
                                 });
-                                ;
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: Container(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  decoration: BoxDecoration(
-                                      color: THEME_COLOR,
-                                      shape: BoxShape.rectangle,
-                                      border: Border.all(
-                                          width: 1, color: Colors.white),
-                                      borderRadius: BorderRadius.circular(25.0),
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: loginUser != null
-                                              ? Image.network(BASE_FILE_URL +
-                                                      loginUser.avatar)
-                                                  .image
-                                              : Image.asset(
-                                                      "assets/images/placeholder.png")
-                                                  .image)),
-                                ),
-                              )),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text(
-                              loginUser != null ? loginUser.nickName : "未登录",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      splashColor: THEME_GREY_COLOR,
-                      icon: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        pushPage(context,
-                                nextPage: loginUser != null
-                                    ? LoginUserInfoPage()
-                                    : UserLoginPage())
-                            .then((value) {
-                          if (value is String && value == "exitLoginUser") {
-                            loginUser = null;
-                          } else if (value is UserBean) {
-                            setState(() {
-                              loginUser = value;
+                              }
                             });
-                          }
+                            ;
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Container(
+                              width: 50.0,
+                              height: 50.0,
+                              decoration: BoxDecoration(
+                                  color: THEME_COLOR,
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(
+                                      width: 1, color: Colors.white),
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: loginUser != null
+                                          ? Image.network(BASE_FILE_URL +
+                                          loginUser.avatar)
+                                          .image
+                                          : Image.asset(
+                                          "assets/images/placeholder.png")
+                                          .image)),
+                            ),
+                          )),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text(
+                          loginUser != null ? loginUser.nickName : "未登录",
+                          style:
+                          TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                IconButton(
+                  splashColor: THEME_GREY_COLOR,
+                  icon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    pushPage(context,
+                        nextPage: loginUser != null
+                            ? LoginUserInfoPage()
+                            : UserLoginPage())
+                        .then((value) {
+                      if (value is String && value == "exitLoginUser") {
+                        loginUser = null;
+                      } else if (value is UserBean) {
+                        setState(() {
+                          loginUser = value;
                         });
-                      },
-                    )
-                  ],
-                )),
+                      }
+                    });
+                  },
+                )
+              ],
+            ),
           )),
       InkWell(
         onTap: () {
@@ -267,9 +243,7 @@ class _UserPageState extends State<UserPage>
       ),
       InkWell(
         onTap: () {
-
           pushPage(context, nextPage: SettingPage());
-
         },
         radius: 1000,
         splashColor: THEME_COLOR,

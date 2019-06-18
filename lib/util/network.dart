@@ -11,14 +11,14 @@ class NetUtil {
   //get请求
   static void get(String url, Function callBack,
       {Map<String, String> params, Function errorCallBack}) async {
-    _request(BASE_URL + url, callBack,
+    _request(url, callBack,
         method: GET, params: params, errorCallBack: errorCallBack);
   }
 
   //post请求
   static void post(String url, Function callBack,
       {Map<String, String> params, Function errorCallBack}) async {
-    _request(BASE_URL+url, callBack,
+    _request(url, callBack,
         method: POST, params: params, errorCallBack: errorCallBack);
   }
   static void postFile(String url,UploadFileInfo fileInfo,{Map<String, String> params,Function callBack,Function errorCallBack}) async{

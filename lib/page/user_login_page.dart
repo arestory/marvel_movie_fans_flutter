@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'before_regitser_question_page.dart';

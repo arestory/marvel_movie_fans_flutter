@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 
 class LoadingDataLayout extends StatefulWidget {
-  final Widget dataWidget;
+  final Widget child;
   final bool isLoading;
   final String loadingTitle;
   final String emptyTitle;
@@ -15,7 +15,7 @@ class LoadingDataLayout extends StatefulWidget {
 
    LoadingDataLayout(
       {Key key,
-      this.dataWidget,
+      this.child,
         this.loadingTitle:"正在加载中...",
         this.emptyTitle:"数据为空",
         this.errorTitle:"数据加载失败，点击重试",
@@ -93,7 +93,7 @@ class _LoadingDataLayoutState extends State<LoadingDataLayout> {
             ),
           ));
     } else {
-      return widget.dataWidget;
+      return widget.child;
     }
   }
 

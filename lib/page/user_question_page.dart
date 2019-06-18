@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/bean/UpdateUser.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
-import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
+import 'package:marvel_movie_fans_flutter/widget/state_layout.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/NoAdminQuestionBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/question_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
 import 'question_detail.dart';
 import 'user_info_page.dart';
 import 'package:marvel_movie_fans_flutter/util/event_bus.dart';
 
 class UserQuestionPage extends StatefulWidget {
-  
   final String userId;
-  final  String nickName;
-  const UserQuestionPage(this.userId,this.nickName);
+  final String nickName;
+
+  const UserQuestionPage(this.userId, this.nickName);
+
   @override
   _UserQuestionPageState createState() => _UserQuestionPageState();
 }
 
-class _UserQuestionPageState extends State<UserQuestionPage>
-     {
+class _UserQuestionPageState extends State<UserQuestionPage> {
   ScrollController _controller = new ScrollController();
   bool _isLoading = true;
   bool _isEmpty = false;
   bool _isError = false;
   bool _isNoMoreData = false;
   bool isPerformingRequest = true;
- 
 
   int _currentPage = 1;
   List<NoAdminQuestionBean> _noAdminQuestionList = <NoAdminQuestionBean>[];
@@ -46,7 +44,7 @@ class _UserQuestionPageState extends State<UserQuestionPage>
 
     QuestionDataSource.getNoAdminQuestion(page,
         userId: loginUser.id,
-        createUserId:  widget.userId,
+        createUserId: widget.userId,
         count: 4, callback: (list) {
       print("size = ${list.length}");
 
@@ -56,7 +54,7 @@ class _UserQuestionPageState extends State<UserQuestionPage>
         _currentPage = page;
         if (page == 1) {
           _noAdminQuestionList = list;
-          if(_noAdminQuestionList.length==0){
+          if (_noAdminQuestionList.length == 0) {
             setState(() {
               _isEmpty = true;
             });
@@ -71,7 +69,6 @@ class _UserQuestionPageState extends State<UserQuestionPage>
             _isNoMoreData = true;
           }
         }
-
       });
     }, errorCallback: (msg) {
       print(msg);
@@ -86,40 +83,38 @@ class _UserQuestionPageState extends State<UserQuestionPage>
     });
   }
 
-
   Widget buildListItem(BuildContext context, int index) {
     if (index < _noAdminQuestionList.length) {
       NoAdminQuestionBean question = _noAdminQuestionList[index];
       return InkWell(
         radius: 1000,
         onTap: () {
-          Navigator.of(context).push(new PageRouteBuilder(
-              opaque: false,
-              pageBuilder: (BuildContext context, _, __) {
-                return QuestionDetailPage(question);
-              },
-              transitionsBuilder:
-                  (_, Animation<double> animation, __, Widget child) {
-                return new FadeTransition(
-                  opacity: animation,
-                  child: new FadeTransition(
-                    opacity: new Tween<double>(begin: 0.5, end: 1.0)
-                        .animate(animation),
-                    child: child,
-                  ),
-                );
-              })).then((question){
-            if(question is NoAdminQuestionBean){
-
+          Navigator.of(context)
+              .push(new PageRouteBuilder(
+                  opaque: false,
+                  pageBuilder: (BuildContext context, _, __) {
+                    return QuestionDetailPage(question);
+                  },
+                  transitionsBuilder:
+                      (_, Animation<double> animation, __, Widget child) {
+                    return new FadeTransition(
+                      opacity: animation,
+                      child: new FadeTransition(
+                        opacity: new Tween<double>(begin: 0.5, end: 1.0)
+                            .animate(animation),
+                        child: child,
+                      ),
+                    );
+                  }))
+              .then((question) {
+            if (question is NoAdminQuestionBean) {
               int index = _noAdminQuestionList.indexOf(question);
-              if(index>=0){
+              if (index >= 0) {
                 question.hadAnswer = true;
                 setState(() {
-                  _noAdminQuestionList[index] =question;
-
+                  _noAdminQuestionList[index] = question;
                 });
               }
-
             }
           });
         },
@@ -162,8 +157,9 @@ class _UserQuestionPageState extends State<UserQuestionPage>
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (context) {
                                 return UserInfoPage(
+                                  avatar: question.avatar,
                                   userId: question.createUserId,
-                                  nickName:question.nickName,
+                                  nickName: question.nickName,
                                 );
                               }));
                             },
@@ -179,7 +175,7 @@ class _UserQuestionPageState extends State<UserQuestionPage>
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
                                     image: FadeInImage.assetNetwork(
-                                      image:  (BASE_FILE_URL + question.avatar),
+                                      image: (BASE_FILE_URL + question.avatar),
                                       placeholder:
                                           "assets/images/placeholder.png",
                                       fit: BoxFit.cover,
@@ -214,11 +210,12 @@ class _UserQuestionPageState extends State<UserQuestionPage>
   }
 
   UserBean loginUser;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    UserDataSource.getLoginUser().then((user){
+    UserDataSource.getLoginUser().then((user) {
       loginUser = user;
       _getQuestionList(1);
     });
@@ -232,66 +229,80 @@ class _UserQuestionPageState extends State<UserQuestionPage>
     });
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
-
-    LoadingDataLayout loadingDataLayout = LoadingDataLayout(
-      isError: _isError,
-      isLoading: _isLoading,
-      isDataEmpty: _isEmpty,
-      emptyTitle: "${widget.nickName}还没有提交过问题",
-      errorClick: () {
-        _getQuestionList(1);
-      },
-      dataWidget:_noAdminQuestionList.length>0?RefreshIndicator(
-          color: THEME_COLOR,
-          notificationPredicate: (no) {
-            return true;
-          },
-          child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              controller: _controller,
-              itemBuilder: (BuildContext context, int index) {
-                if (index != _noAdminQuestionList.length) {
-                  return buildListItem(context, index);
-                } else {
-                  if (_isNoMoreData) {
-                    return new Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: new Center(
-                        child: new Opacity(
-                          opacity: _isNoMoreData ? 1.0 : 0.0,
-                          child: Text("没有数据了"),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return   (_currentPage==1&&_noAdminQuestionList.length<4)?null:new Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: new Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            new CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation(THEME_COLOR),
+    StateDataLayout loadingDataLayout = StateDataLayout(
+        isError: _isError,
+        isLoading: _isLoading,
+        isDataEmpty: _isEmpty,
+        emptyWidget: Center(
+            child: Column(
+          //居中
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.receipt),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text("${widget.nickName}还没有提交过问题"),
+            )
+          ],
+        )),
+        errorClick: () {
+          _getQuestionList(1);
+        },
+        child: _noAdminQuestionList.length > 0
+            ? RefreshIndicator(
+                color: THEME_COLOR,
+                notificationPredicate: (no) {
+                  return true;
+                },
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _controller,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index != _noAdminQuestionList.length) {
+                        return buildListItem(context, index);
+                      } else {
+                        if (_isNoMoreData) {
+                          return new Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: new Center(
+                              child: new Opacity(
+                                opacity: _isNoMoreData ? 1.0 : 0.0,
+                                child: Text("没有数据了"),
+                              ),
                             ),
-                          Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text("正在加载数据"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                }
-              }),
-          onRefresh: () {
-            _getQuestionList(1);
-          }):null
-    );
+                          );
+                        } else {
+                          return (_currentPage == 1 &&
+                                  _noAdminQuestionList.length < 4)
+                              ? null
+                              : new Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: new Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        new CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation(
+                                              THEME_COLOR),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text("正在加载数据"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                        }
+                      }
+                    }),
+                onRefresh: () {
+                  _getQuestionList(1);
+                })
+            : null);
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.nickName}提交的问题"),
@@ -302,8 +313,6 @@ class _UserQuestionPageState extends State<UserQuestionPage>
             }),
       ),
       body: loadingDataLayout,
-
     );
   }
-
 }

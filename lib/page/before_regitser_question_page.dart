@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
+import 'package:marvel_movie_fans_flutter/widget/state_layout.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
 import 'common_question_page.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:marvel_movie_fans_flutter/bean/question_bean.dart';
 
 class BeforeRegisterQuestionPage extends StatefulWidget {
 
 
-  static _BeforeRegisterQuestionPageState __randomPageState = _BeforeRegisterQuestionPageState();
   @override
   _BeforeRegisterQuestionPageState createState() => _BeforeRegisterQuestionPageState();
 }
@@ -26,11 +25,11 @@ class _BeforeRegisterQuestionPageState extends State<BeforeRegisterQuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LoadingDataLayout loadingDataLayout = LoadingDataLayout(
+    StateDataLayout loadingDataLayout = StateDataLayout(
       isLoading: _isLoading,
       isError: _isError,
       isDataEmpty: _isEmpty,
-      dataWidget: Container(
+      child: Container(
         child: Column(
           children: <Widget>[
             _currentQuestion != null

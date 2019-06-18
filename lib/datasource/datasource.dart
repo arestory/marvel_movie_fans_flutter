@@ -1,16 +1,13 @@
 import 'package:flutter/services.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserPoint.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserPointRank.dart';
-import 'package:marvel_movie_fans_flutter/util/DioUtil.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
+import 'package:marvel_movie_fans_flutter/bean/question_bean.dart';
+import 'package:marvel_movie_fans_flutter/util/network.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
-import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
-import 'package:marvel_movie_fans_flutter/bean/NoAdminQuestionBean.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-
+//问题相关的数据源
 class QuestionDataSource {
   static void getQuestionList(int page,
       {int count = 10,
@@ -102,7 +99,7 @@ class QuestionDataSource {
         });
   }
 }
-
+//用户相关的数据源
 class UserDataSource {
   static void savePassLevel(String userId, int level) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -222,7 +219,7 @@ class UserDataSource {
 
   static void getUserRanking(String userId,
       {DataCallBack<UserPointRank> success, ErrorCallback error}) {
-    NetUtil.get("user/$userId/getUserPosition", (data) {
+    NetUtil.get("${BASE_URL}user/$userId/getUserPosition", (data) {
       success(UserPointRank.fromJsonMap(data));
     }, errorCallBack: (msg) {
       error(msg);
@@ -249,6 +246,47 @@ class UserDataSource {
   static void saveLoginUser(UserBean user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("loginUser", json.encode(user));
+  }
+
+  static Future<int> getTipsCount() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var date  = DateTime.now();
+    var key = "tips-count-${date.year}-${date.month}-${date.day}";
+    int tipsCount = prefs.getInt(key);
+
+    if(tipsCount==null){
+      tipsCount= 5;
+      prefs.setInt(key, tipsCount);
+
+    }
+
+    return Future.value(tipsCount);
+  }
+
+  static Future<bool> useTipsCount() async{
+    int tipsCount = await getTipsCount();
+    if(tipsCount>0){
+      increaseTipCount(-1);
+      return Future.value(true);
+    }else{
+      return Future.value(false);
+
+    }
+  }
+
+  static Future<void> increaseTipCount(int count) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var date  = DateTime.now();
+
+    var key = "tips-count-${date.year}-${date.month}-${date.day}";
+    int tipsCount = prefs.getInt(key);
+    if(tipsCount!=null){
+      prefs.setInt(key, tipsCount+count);
+    }
+
+    return Future.value();
   }
 
   static Future<UserBean> getLoginUser() async {
@@ -303,7 +341,7 @@ class UserDataSource {
 
   static void answerQuestion(String userId, String questionId,
       {DataCallBack<String> success, ErrorCallback fail}) {
-    NetUtil.post("/user/$userId/answer/$questionId", (data) {
+    NetUtil.post("${BASE_URL}user/$userId/answer/$questionId", (data) {
       success(data);
     }, errorCallBack: (msg) {
       fail(msg);
@@ -311,11 +349,15 @@ class UserDataSource {
   }
 
   static void commitFeedback(String content,
-      {String userId: "traveler", String questionId,DataCallBack<String> success, ErrorCallback fail}) {
-    NetUtil.post("/user/feedback/commit", (data) {
-
-      success(data);
-    },
+      {String userId: "traveler",
+      String questionId,
+      DataCallBack<String> success,
+      ErrorCallback fail}) {
+    NetUtil.post(
+        "/user/feedback/commit",
+        (data) {
+          success(data);
+        },
         params: {
           "userId": userId,
           "questionId": questionId,

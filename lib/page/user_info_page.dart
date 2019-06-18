@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 import 'package:marvel_movie_fans_flutter/page/user_question_page.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:marvel_movie_fans_flutter/util/api_constants.dart';
-import 'package:marvel_movie_fans_flutter/widget/loading_data_layout.dart';
-import 'package:marvel_movie_fans_flutter/widget/PhotoView.dart';
+import 'package:marvel_movie_fans_flutter/widget/state_layout.dart';
+import 'package:marvel_movie_fans_flutter/widget/circle_widgets.dart';
+import 'package:marvel_movie_fans_flutter/widget/preview_photo.dart';
+
 class UserInfoPage extends StatefulWidget {
   final String userId;
   final String nickName;
+  final String avatar;
 
-  const UserInfoPage({this.userId, this.nickName});
+  const UserInfoPage({this.userId, this.nickName, this.avatar});
 
   @override
   _UserInfoPageState createState() => _UserInfoPageState();
@@ -52,6 +55,31 @@ class _UserInfoPageState extends State<UserInfoPage> {
     });
   }
 
+  Widget _buildListItem({String title, String content}) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 30, bottom: 30, left: 10, right: 10),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(title),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Text(content),
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          height: 1,
+          color: THEME_GREY_COLOR,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,12 +94,12 @@ class _UserInfoPageState extends State<UserInfoPage> {
               }),
           title: Text(widget.nickName),
         ),
-        body: LoadingDataLayout(
+        body: StateDataLayout(
           isError: _isError,
           isDataEmpty: _isEmpty,
           isLoading: _isLoading,
           errorClick: _getUserInfo,
-          dataWidget: Column(
+          child: Column(
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.all(10),
@@ -82,54 +110,20 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     ),
                     Row(
                       children: <Widget>[
-                       GestureDetector(
-                         onTap: (){
-                           Navigator.of(context).push(new PageRouteBuilder(
-                               opaque: false,
-                               pageBuilder: (BuildContext context, _, __) {
-                                 return PhotoView(
-                                   url: BASE_FILE_URL + currentUser.avatar,
-                                 );
-                               },
-                               transitionsBuilder: (_,
-                                   Animation<double> animation,
-                                   __,
-                                   Widget child) {
-                                 return new FadeTransition(
-                                   opacity: animation,
-                                   child: new FadeTransition(
-                                     opacity: new Tween<double>(
-                                         begin: 0.5, end: 1.0)
-                                         .animate(animation),
-                                     child: child,
-                                   ),
-                                 );
-                               }));
-                         },
-                         child:  Padding(
-                           padding: EdgeInsets.only(left: 10,right: 10),
-                           child: Container(
-                             width: 60.0,
-                             height: 60.0,
-                             decoration: BoxDecoration(
-                               color: THEME_COLOR,
-                               shape: BoxShape.rectangle,
-                               borderRadius: BorderRadius.circular(30.0),
-                               image: DecorationImage(
-                                 fit: BoxFit.cover,
-                                 image: currentUser != null
-                                     ? Image.network(
-                                     BASE_FILE_URL + currentUser.avatar)
-                                     .image
-                                     : Image.asset(
-                                     "assets/images/placeholder.png")
-                                     .image,
-                               ),
-                             ),
-                           ),
-                         ),
-                       ),
-
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(PhotoView.previewPhoto(
+                                context, BASE_FILE_URL + widget.avatar));
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: CirclePhoto(
+                              url: BASE_FILE_URL + widget.avatar,
+                              width: 60,
+                              height: 60,
+                            ),
+                          ),
+                        ),
                       ],
                     )
                   ],
@@ -139,97 +133,25 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 height: 1,
                 color: THEME_GREY_COLOR,
               ),
-              Padding(
-                    padding: EdgeInsets.only(
-                        top: 30, bottom: 30, left: 10, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text("昵称"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10,right: 10),
-                          child: Text(widget.nickName),
-                        ),
-                      ],
-                    ),
-                  ),
-              Divider(
-                height: 1,
-                color: THEME_GREY_COLOR,
-              ),
-              Padding(
-                    padding: EdgeInsets.only(
-                        top: 30, bottom: 30, left: 10, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text("族群"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10,right: 10),
-                          child: Text(
-                              currentUser != null ? currentUser.sex : ""),
-                        ),
-                      ],
-                    ),
-                  ),
-              Divider(
-                height: 1,
-                color: THEME_GREY_COLOR,
-              ),
-              Padding(
-                    padding: EdgeInsets.only(
-                        top: 30, bottom: 30, left: 10, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text("年龄"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10,right: 10),
-                          child: Text(currentUser != null
-                              ? "${currentUser.age}"
-                              : ""),
-                        ),
-                      ],
-                    ),
-                  ),
-              Divider(
-                height: 1,
-                color: THEME_GREY_COLOR,
-              ),
-              Padding(
-                    padding: EdgeInsets.only(
-                        top: 30, bottom: 30, left: 10, right: 10),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text("个性签名"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10,right: 10),
-                          child: Text(currentUser != null
-                              ? "${currentUser.slogan}"
-                              : ""),
-                        ),
-                      ],
-                    ),
-                  ),
-              Divider(
-                height: 1,
-                color: THEME_GREY_COLOR,
-              ), InkWell(
+              _buildListItem(title: "昵称", content: widget.nickName),
+              _buildListItem(
+                  title: "族群",
+                  content: currentUser != null ? currentUser.sex : ""),
+              _buildListItem(
+                  title: "年龄",
+                  content: currentUser != null ? "${currentUser.age}" : ""),
+              _buildListItem(
+                  title: "个性签名",
+                  content: currentUser != null ? "${currentUser.slogan}" : ""),
+              InkWell(
                   radius: 1000,
                   splashColor: THEME_COLOR,
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
-
-
-                      return UserQuestionPage(currentUser.id,currentUser.nickName);
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return UserQuestionPage(
+                          currentUser.id, currentUser.nickName);
                     }));
-
-
                   },
                   child: Padding(
                     padding: EdgeInsets.only(

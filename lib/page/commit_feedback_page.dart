@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_movie_fans_flutter/datasource/datasource.dart';
-import 'package:marvel_movie_fans_flutter/bean/UserBean.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
 
 class CommitFeedbackPage extends StatefulWidget {
   final String questionId;

@@ -6,10 +6,11 @@
         <item name="android:windowBackground">@drawable/launch_background</item>
 
     </style>
-    <style name="Adv"  >
 
-
-        <item name="android:colorPrimary">#B20000</item>
-        <item name="android:colorAccent">#B20000</item>
+    <style name="Adv"  parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">#B20000</item>
+        <item name="colorPrimaryDark">#B20000</item>
+        <item name="colorAccent">#B20000</item>
     </style>
 </resources>

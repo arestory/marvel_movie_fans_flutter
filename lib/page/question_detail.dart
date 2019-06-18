@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_movie_fans_flutter/bean/NoAdminQuestionBean.dart';
-import 'package:marvel_movie_fans_flutter/bean/QuestionBean.dart';
+import 'package:marvel_movie_fans_flutter/bean/user_bean.dart';
+import 'package:marvel_movie_fans_flutter/bean/question_bean.dart';
 import 'package:marvel_movie_fans_flutter/util/color_resource.dart';
 import 'common_question_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
