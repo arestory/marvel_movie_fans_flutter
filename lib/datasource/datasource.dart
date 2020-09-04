@@ -159,46 +159,46 @@ class UserDataSource {
 
   static void uploadAvatar(String userId, File imageFile,
       {DataCallBack<UserBean> success, ErrorCallback error}) {
-    NetUtil.postFile(
-        "${BASE_URL}user/$userId/uploadAvatar",
-        UploadFileInfo(imageFile, imageFile.path.split("/").last,
-            contentType: ContentType.parse("image/jpg")), callBack: (data) {
-      print("上传成功");
-      if (success != null) {
-        success(UserBean.fromJsonMap(data));
-      }
-    }, errorCallBack: (msg) {
-      print("上传失败 ： $msg");
-      if (error != null) {
-        error("$msg");
-      }
-    });
+//    NetUtil.postFile(
+//        "${BASE_URL}user/$userId/uploadAvatar",
+//        MultipartFile(imageFile, imageFile.path.split("/").last,
+//            contentType: ContentType.parse("image/jpg")), callBack: (data) {
+//      print("上传成功");
+//      if (success != null) {
+//        success(UserBean.fromJsonMap(data));
+//      }
+//    }, errorCallBack: (msg) {
+//      print("上传失败 ： $msg");
+//      if (error != null) {
+//        error("$msg");
+//      }
+//    });
   }
 
   static void uploadQuestion(String userId, File imageFile, String title,
       String answer, String keywords, String point,
       {DataCallBack success, ErrorCallback error}) {
-    NetUtil.postFile(
-        "${BASE_URL}question/upload",
-        UploadFileInfo(imageFile, imageFile.path.split("/").last,
-            contentType: ContentType.parse("image/jpg")),
-        params: {
-          "createUserId": userId,
-          "title": title,
-          "answer": answer,
-          "keywords": keywords,
-          "point": point,
-        }, callBack: (data) {
-      print("上传成功");
-      if (success != null) {
-        success("上传成功");
-      }
-    }, errorCallBack: (msg) {
-      print("上传失败 ： $msg");
-      if (error != null) {
-        error("$msg");
-      }
-    });
+//    NetUtil.postFile(
+//        "${BASE_URL}question/upload",
+//        UploadFileInfo(imageFile, imageFile.path.split("/").last,
+//            contentType: ContentType.parse("image/jpg")),
+//        params: {
+//          "createUserId": userId,
+//          "title": title,
+//          "answer": answer,
+//          "keywords": keywords,
+//          "point": point,
+//        }, callBack: (data) {
+//      print("上传成功");
+//      if (success != null) {
+//        success("上传成功");
+//      }
+//    }, errorCallBack: (msg) {
+//      print("上传失败 ： $msg");
+//      if (error != null) {
+//        error("$msg");
+//      }
+//    });
   }
 
   static void getUserPoint(int page,

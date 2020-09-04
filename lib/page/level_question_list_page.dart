@@ -110,7 +110,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
               msg: "恭喜你，回答正确，请继续回答",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
-              timeInSecForIos: 1,
+              timeInSecForIosWeb: 1,
               backgroundColor: THEME_COLOR,
               textColor: Colors.white,
             );
@@ -124,7 +124,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
               msg: "恭喜你，本关已全部回答完毕",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
-              timeInSecForIos: 1,
+              timeInSecForIosWeb: 1,
               backgroundColor: THEME_COLOR,
               textColor: Colors.white,
             );
@@ -140,7 +140,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
               msg: "恭喜你，回答正确",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
-              timeInSecForIos: 1,
+              timeInSecForIosWeb: 1,
               backgroundColor: THEME_COLOR,
               textColor: Colors.white,
             );
@@ -157,7 +157,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
             msg: "回答不正确",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
-            timeInSecForIos: 1,
+            timeInSecForIosWeb: 1,
             backgroundColor: Colors.grey,
             textColor: Colors.white,
           );
@@ -229,7 +229,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
                               msg: "恭喜你，本关已全部回答完毕",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
-                              timeInSecForIos: 1,
+                              timeInSecForIosWeb: 1,
                               backgroundColor: THEME_COLOR,
                               textColor: Colors.white,
                             );
@@ -244,7 +244,7 @@ class _LevelQuestionPageState extends State<LevelQuestionPage> {
                               msg: "恭喜你，回答正确，请继续回答",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
-                              timeInSecForIos: 1,
+                              timeInSecForIosWeb: 1,
                               backgroundColor: THEME_COLOR,
                               textColor: Colors.white,
                             );

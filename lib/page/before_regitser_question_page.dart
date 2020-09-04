@@ -39,7 +39,7 @@ class _BeforeRegisterQuestionPageState extends State<BeforeRegisterQuestionPage>
                 msg: "恭喜你，回答正确",
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
-                timeInSecForIos: 1,
+                timeInSecForIosWeb: 1,
                 backgroundColor: THEME_COLOR,
                 textColor: Colors.white,
               );
@@ -54,7 +54,6 @@ class _BeforeRegisterQuestionPageState extends State<BeforeRegisterQuestionPage>
                 msg: "回答不正确",
                 toastLength: Toast.LENGTH_SHORT,
                 gravity: ToastGravity.BOTTOM,
-                timeInSecForIos: 1,
                 backgroundColor: Colors.grey,
                 textColor: Colors.white,
               );

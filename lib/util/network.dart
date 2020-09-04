@@ -21,7 +21,7 @@ class NetUtil {
     _request(url, callBack,
         method: POST, params: params, errorCallBack: errorCallBack);
   }
-  static void postFile(String url,UploadFileInfo fileInfo,{Map<String, String> params,Function callBack,Function errorCallBack}) async{
+  static void postFile(String url,MultipartFile fileInfo,{Map<String, String> params,Function callBack,Function errorCallBack}) async{
     Map<String,dynamic> data = {
       "file":fileInfo
     };
@@ -34,7 +34,7 @@ class NetUtil {
         }
       });
     }
-    FormData formData = FormData.from(data);
+    FormData formData = FormData.fromMap(data);
 
     try{
       Dio dio = new Dio();
